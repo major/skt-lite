@@ -24,8 +24,15 @@ fi
 
 # Set up a name/email configuration for git
 pushd $KERNEL_DIR
-  git config --global user.name "SKT"
-  git config --global user.email "noreply@redhat.com"
+    git init
+    git remote add origin $KERNEL_REPO
+    if [ "$KERNEL_DEPTH" == '0' ]; then
+        git fetch origin $KERNEL_REF
+    else
+        git fetch origin --depth $KERNEL_DEPTH $KERNEL_REF
+    fi
+    git config --global user.name "SKT"
+    git config --global user.email "noreply@redhat.com"
 popd
 
 MERGE_LOG=${OUTPUT_DIR}/merge.log
