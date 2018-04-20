@@ -22,6 +22,12 @@ else
     git clone $KERNEL_REPO $KERNEL_DIR --depth $KERNEL_DEPTH --ref $KERNEL_REF
 fi
 
+# Set up a name/email configuration for git
+pushd $KERNEL_DIR
+  git config --global user.name "SKT"
+  git config --global user.email "noreply@redhat.com"
+popd
+
 MERGE_LOG=${OUTPUT_DIR}/merge.log
 :>$MERGE_LOG
 
