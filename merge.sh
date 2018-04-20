@@ -30,7 +30,7 @@ pushd $KERNEL_DIR
 popd
 
 MERGE_LOG=${OUTPUT_DIR}/merge.log
-:>$MERGE_LOG
+echo " " > $MERGE_LOG
 
 # Attempt to merge the patchwork patches into the repository
 if [ ! -z "$PATCHWORK_URLS" ]; then
