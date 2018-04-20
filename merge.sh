@@ -16,6 +16,7 @@
 KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
 
 # Set up a name/email configuration for git
+mkdir -p $KERNEL_DIR
 pushd $KERNEL_DIR
     git init
     git remote add origin $KERNEL_REPO
