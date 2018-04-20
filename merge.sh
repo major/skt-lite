@@ -15,13 +15,6 @@
 # Use a shallow clone depth of 1 unless the user specified a deeper clone.
 KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
 
-# Clone the repository
-if [ "$KERNEL_DEPTH" == '0' ]; then
-    git clone $KERNEL_REPO $KERNEL_DIR --ref $KERNEL_REF
-else
-    git clone $KERNEL_REPO $KERNEL_DIR --depth $KERNEL_DEPTH --ref $KERNEL_REF
-fi
-
 # Set up a name/email configuration for git
 pushd $KERNEL_DIR
     git init
