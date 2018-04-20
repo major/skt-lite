@@ -17,15 +17,10 @@ KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
 
 # Clone the repository
 if [ "$KERNEL_DEPTH" == '0' ]; then
-    git clone $KERNEL_REPO $KERNEL_DIR
+    git clone $KERNEL_REPO $KERNEL_DIR --ref $KERNEL_REF
 else
-    git clone $KERNEL_REPO $KERNEL_DIR --depth $KERNEL_DEPTH
+    git clone $KERNEL_REPO $KERNEL_DIR --depth $KERNEL_DEPTH --ref $KERNEL_REF
 fi
-
-# Checkout the appropriate ref from the repository
-pushd $KERNEL_DIR
-    git checkout $KERNEL_REF
-popd
 
 MERGE_LOG=${OUTPUT_DIR}/merge.log
 :>$MERGE_LOG
