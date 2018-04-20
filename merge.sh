@@ -47,7 +47,7 @@ if [ ! -z "$PATCHWORK_URLS" ]; then
     for PATCHWORK_URL in $PATCHWORK_URLS; do
         MBOX_URL=${PATCHWORK_URL%/}/mbox/
         PATCH_FILENAME=${TEMPDIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
-        curl -# -o $PATCH_FILENAME $PATCHWORK_URL
+        curl -# -o $PATCH_FILENAME $MBOX_URL
 
         pushd $KERNEL_DIR
             echo "Applying $PATCHWORK_URL ..." | tee -a $MERGE_LOG
