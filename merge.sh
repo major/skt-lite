@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -xe
 # Required environment variables:
 #  KERNEL_REPO - URL or filesystem path to the kernel to clone
 #  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
@@ -30,7 +30,11 @@ pushd $KERNEL_DIR
 popd
 
 MERGE_LOG=${OUTPUT_DIR}/merge.log
-echo " " > $MERGE_LOG
+
+if [ -e $MERGE_LOG ]; then
+    rm -f $MERGE_LOG
+fi
+touch $MERGE_LOG
 
 # Attempt to merge the patchwork patches into the repository
 if [ ! -z "$PATCHWORK_URLS" ]; then
