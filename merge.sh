@@ -31,6 +31,10 @@ popd
 
 MERGE_LOG=${OUTPUT_DIR}/merge.log
 
+# Create the output directory if it does not exist
+mkdir -p $OUTPUT_DIR
+
+# Remove any existing merge logs
 if [ -e $MERGE_LOG ]; then
     rm -f $MERGE_LOG
 fi
