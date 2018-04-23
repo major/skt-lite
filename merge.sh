@@ -29,6 +29,10 @@ pushd $KERNEL_DIR
     git config --global user.email "noreply@redhat.com"
 popd
 
+if [[ ! "$OUTPUT_DIR" =~ ^/ ]]; then
+    OUTPUT_DIR=$(pwd)/${OUTPUT_DIR}
+fi
+
 MERGE_LOG=${OUTPUT_DIR}/merge.log
 
 # Create the output directory if it does not exist
