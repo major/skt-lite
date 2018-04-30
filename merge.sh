@@ -1,4 +1,5 @@
-#!/bin/bash -xe
+#!/bin/bash
+set -euxo pipefail
 # Required environment variables:
 #  KERNEL_REPO - URL or filesystem path to the kernel to clone
 #  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
