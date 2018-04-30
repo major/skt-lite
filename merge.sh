@@ -18,6 +18,8 @@ KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
 # Set up a name/email configuration for git
 mkdir -p $KERNEL_DIR
 pushd $KERNEL_DIR
+    git config --global user.name "SKT"
+    git config --global user.email "noreply@redhat.com"
     git init
     git remote add origin $KERNEL_REPO
     if [ "$KERNEL_DEPTH" == '0' ]; then
@@ -25,18 +27,20 @@ pushd $KERNEL_DIR
     else
         git fetch origin --depth $KERNEL_DEPTH $KERNEL_REF
     fi
-    git config --global user.name "SKT"
-    git config --global user.email "noreply@redhat.com"
 popd
 
-if [[ ! "$OUTPUT_DIR" =~ ^/ ]]; then
+# Use the current working directory for relative paths
+if [[ ! "$OUTPUT_DIR" =~ ^[/~] ]]; then
     OUTPUT_DIR=$(pwd)/${OUTPUT_DIR}
 fi
 
-MERGE_LOG=${OUTPUT_DIR}/merge.log
+# Set up a directory to hold all of the merge-related data
+MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge
+MERGE_LOG=${OUTPUT_DIR}/merge/merge.log
 
-# Create the output directory if it does not exist
+# Create the output directories if they do not exist
 mkdir -p $OUTPUT_DIR
+mkdir -p $MERGE_OUTPUT_DIR
 
 # Remove any existing merge logs
 if [ -e $MERGE_LOG ]; then
@@ -47,17 +51,17 @@ touch $MERGE_LOG
 # Attempt to merge the patchwork patches into the repository
 if [ ! -z "$PATCHWORK_URLS" ]; then
     # Create a temporary directory to hold our patchwork patches.
-    TEMPDIR=$(mktemp -d)
     PATCH_COUNTER=0
     # Loop through the patches and download them.
     for PATCHWORK_URL in $PATCHWORK_URLS; do
         MBOX_URL=${PATCHWORK_URL%/}/mbox/
-        PATCH_FILENAME=${TEMPDIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
-        curl -# -o $PATCH_FILENAME $MBOX_URL
+        PATCH_FILENAME=${MERGE_OUTPUT_DIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
+        echo "Downloading $MBOX_URL to $PATCH_FILENAME..." | tee -a $MERGE_LOG
+        curl -# -o $PATCH_FILENAME $MBOX_URL | tee -a $MERGE_LOG
 
         pushd $KERNEL_DIR
             echo "Applying $PATCHWORK_URL ..." | tee -a $MERGE_LOG
-            git am $PATCH_FILENAME | tee -a $MERGE_LOG
+            git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG
         popd
 
         PATCH_COUNTER=$((PATCH_COUNTER+1))
