@@ -15,6 +15,9 @@
 
 # Required environment variables:
 #  KERNEL_REPO - URL or filesystem path to the kernel to clone
+#  CONFIG_TYPE - kernel configuration file type
+#    * 'rh-configs': build Red Hat kernel configs and choose one based on arch
+#    * 'url': download a config from a URL
 #
 # Optional environment variables:
 #  KERNEL_DEPTH - depth of kernel repo to clone
@@ -28,6 +31,8 @@
 #  OUTPUT_DIR - path to desired kernel output
 #    * default is 'output' in current directory
 #  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
+#  CONFIG_URL - URL to kernel config file (if CONFIG_TYPE=='url')
+#  MAKE_OPTS - Additional options and arguments to pass to make
 
 
 # Ensure that the script will fail if any command returns a non-zero return
@@ -39,19 +44,6 @@ export KERNEL_DEPTH=${KERNEL_DEPTH:-'1'}
 export KERNEL_REF=${KERNEL_REF:-"master"}
 export OUTPUT_DIR=${OUTPUT_DIR:-"output"}
 export KERNEL_DIR=${KERNEL_DIR:-"source"}
-
-## Check for unset variables that are required
-REQUIRED_VARS=('KERNEL_REPO')
-for var in "${REQUIRED_VARS[@]}"; do
-    variables_ok='yes'
-    if [ -n "${!var}" ]; then;
-        echo "Required variable is not set: ${var}"
-        variables_ok='no'
-    fi
-    if [ "${variables_ok}" == 'no']; then
-        exit 1
-    fi
-done
 
 # Set a user.name and user.email to ensure that git works properly within
 # containerized environments. OpenShift uses random UIDs and this causes git
@@ -66,7 +58,7 @@ if [[ ! "$OUTPUT_DIR" =~ ^[/~] ]]; then
 fi
 
 # Set up the git repository
-setup_repository() {
+setup_repository () {
     mkdir -p $KERNEL_DIR
     pushd $KERNEL_DIR
         git init
@@ -89,4 +81,76 @@ setup_repository() {
         git checkout -q --detach refs/remotes/origin/${KERNEL_REF}
         git reset --hard refs/remotes/origin/${KERNEL_REF}
     popd
+}
+
+# Ensure that the cross compiler exists and is executable.
+check_cross_compiler () {
+    echo "Checking for correct cross compiler on the system..."
+    if [ ! "$ARCH" == 'x86_64' ]; then
+        if [ ! -x /usr/bin/${CROSS_COMPILE}gcc ]; then
+            echo "ERROR: Compiler missing > ${CROSS_COMPILE}gcc"
+            exit 1
+        fi
+    fi
+}
+
+# Configure all of the architecture variables.
+setup_architecture_variables () {
+    echo "Setting up architecture variables for ${KERNEL_BUILD_ARCH}..."
+    case "$KERNEL_BUILD_ARCH" in
+        aarch64)
+            export ARCH=arm64
+            export CROSS_COMPILE=aarch64-linux-gnu-
+            ;;
+        ppc64le)
+            export ARCH=powerpc
+            export CROSS_COMPILE=powerpc64le-linux-gnu-
+            # CentOS uses the standard ppc64 compiler for big and little
+            # endian.
+            if [ ! -x /usr/bin/${CROSS_COMPILE}gcc ]; then
+                export CROSS_COMPILE=$(echo $CROSS_COMPILE | sed 's/le//')
+            fi
+            ;;
+        s390x)
+            export ARCH=s390
+            export CROSS_COMPILE=s390x-linux-gnu-
+            ;;
+        x86_64)
+            # There is no need to export a CROSS_COMPILE with x86_64 since
+            # that is the native architecture in the build environment.
+            export ARCH=x86_64
+            ;;
+        *)
+            echo "The provided architecture is not supported: $KERNEL_BUILD_ARCH"
+            exit 1
+    esac
+
+    echo "Arch variables:"
+    echo "  - ARCH=${ARCH}"
+    if [ "${KERNEL_BUILD_ARCH}" == 'x86_64' ]; then
+        echo "  - CROSS_COMPILE=(not set)"
+    else
+        echo "  - CROSS_COMPILE=${CROSS_COMPILE}"
+    fi
+
+    check_cross_compiler
+}
+
+# Build the standard set of Red Hat configs or download a config file from a
+# URL.
+get_kernel_config () {
+    $CONFIG_DEST=$1
+    if [ "${CONFIG_TYPE}" == 'rh-configs' ]; then
+        build_redhat_configs
+    elif [ "${CONFIG_TYPE}" == 'url' ]; then
+        curl -# -O $CONFIG_DEST $CONFIG_URL
+    fi
+}
+
+# Generate the Red Hat configuration files and copy the config that matches
+# the current architecture.
+build_redhat_configs () {
+    echo "Building Red Hat configs with `make rh-configs`..."
+    make -C ${WORKDIR_PATH} rh-configs
+    cp -v ${WORKDIR_PATH}/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
 }

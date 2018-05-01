@@ -17,6 +17,19 @@
 BASEDIR="$(dirname "$0")"
 . "${BASEDIR}/includes.sh"
 
+## Check for unset variables that are required
+REQUIRED_VARS=('KERNEL_REPO')
+for var in "${REQUIRED_VARS[@]}"; do
+    variables_ok='yes'
+    if [ -n "${!var}" ]; then;
+        echo "Required variable is not set: ${var}"
+        variables_ok='no'
+    fi
+    if [ "${variables_ok}" == 'no']; then
+        exit 1
+    fi
+done
+
 # Set up the git repository
 setup_repository
 
