@@ -191,9 +191,9 @@ setup_architecture_variables () {
 # Build the standard set of Red Hat configs or download a config file from a
 # URL.
 get_kernel_config () {
-    $CONFIG_DEST=$1
+    CONFIG_DEST=$1
     if [ "${CONFIG_TYPE}" == 'rh-configs' ]; then
-        build_redhat_configs
+        build_redhat_configs $CONFIG_DEST
     elif [ "${CONFIG_TYPE}" == 'url' ]; then
         curl -# -O $CONFIG_DEST $CONFIG_URL
     fi
@@ -202,6 +202,7 @@ get_kernel_config () {
 # Generate the Red Hat configuration files and copy the config that matches
 # the current architecture.
 build_redhat_configs () {
+    CONFIG_DEST=$1
     echo "Building Red Hat configs with `make rh-configs`..."
     make -C ${WORKDIR_PATH} rh-configs
     cp -v ${WORKDIR_PATH}/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
