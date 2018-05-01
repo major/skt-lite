@@ -203,7 +203,7 @@ get_kernel_config () {
 # the current architecture.
 build_redhat_configs () {
     CONFIG_DEST=$1
-    echo "Building Red Hat configs with `make rh-configs`..."
+    echo "Building Red Hat configs with 'make rh-configs'..."
     make -C $KERNEL_DIR rh-configs
     cp -v $KERNEL_DIR/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
 }
