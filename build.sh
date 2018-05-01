@@ -21,7 +21,7 @@ BASEDIR="$(dirname "$0")"
 REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH', 'CONFIG_TYPE')
 missing_vars=()
 for var in "${REQUIRED_VARS[@]}"; do
-    test -n ${!var:+y} || missing_vars+=("${var}")
+    test -n "${!var:+y}" || missing_vars+=("${var}")
 done
 if [ ${#missing_vars[@]} -ne 0 ]; then
     echo "The following required variables are not set:" >&2
