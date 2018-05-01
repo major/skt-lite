@@ -56,15 +56,15 @@ merge_patchwork_patches 'no_log'
 CPU_COUNT=$(nproc)
 
 # Set up a default set of make options.
-DEFAULT_MAKE_OPTS="make -C ${KERNEL_DIR} O=${BUILD_OUTPUT_DIR}"
-DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
+DEFAULT_MAKE_OPTS="make -C ${KERNEL_DIR}"
+DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} O=${BUILD_OUTPUT_DIR} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
 
 # Prepare the kernel output file
-get_kernel_config ${BUILD_OUTPUT_DIR}/.config
+get_kernel_config ${KERNEL_DIR}/.config
 $DEFAULT_MAKE_OPTS olddefconfig
 
 # Clean the output directory and put the config back in place
-mv ${BUILD_OUTPUT_DIR}/.config config
+mv ${KERNEL_DIR}/.config config
 $DEFAULT_MAKE_OPTS mrproper
 mv config ${BUILD_OUTPUT_DIR}/.config
 
