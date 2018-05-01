@@ -204,6 +204,6 @@ get_kernel_config () {
 build_redhat_configs () {
     CONFIG_DEST=$1
     echo "Building Red Hat configs with `make rh-configs`..."
-    make -C ${WORKDIR_PATH} rh-configs
-    cp -v ${WORKDIR_PATH}/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
+    make -C $KERNEL_DIR rh-configs
+    cp -v $KERNEL_DIR/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
 }
