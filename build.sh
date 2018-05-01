@@ -19,9 +19,9 @@ BASEDIR="$(dirname "$0")"
 
 ## Check for unset variables that are required
 REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH', 'CONFIG_TYPE')
+variables_ok='yes'
 for var in "${REQUIRED_VARS[@]}"; do
-    variables_ok='yes'
-    if [ -n "${!var}" ]; then
+    if [ ! -z "${!var}" ]; then
         echo "Required variable is not set: ${var}"
         variables_ok='no'
     fi
