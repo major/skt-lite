@@ -31,7 +31,7 @@ fi
 
 # Check to see if merge completed properly
 MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge
-PATCH_RESULTS_CSV= ${MERGE_OUTPUT_DIR}/patch_results.csv
+PATCH_RESULTS_CSV=${MERGE_OUTPUT_DIR}/patch_results.csv
 if [ ! -f "${PATCH_RESULTS_CSV}" ]; then
     echo "The patch_results.csv is missing from ${MERGE_OUTPUT_DIR}."
     echo "Have you run merge.sh?"
@@ -50,7 +50,7 @@ mkdir -vp $BUILD_OUTPUT_DIR
 
 # Ensure the repository is ready
 setup_repository
-merge_patchwork_patches
+merge_patchwork_patches 'no_log'
 
 # Get the number of CPU cores available
 CPU_COUNT=$(nproc)

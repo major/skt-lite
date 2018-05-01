@@ -89,6 +89,11 @@ setup_repository () {
 
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches () {
+    OPTIONS=${1:-''}
+    if [[ $OPTIONS =~ .*no_log.* ]]; then
+        # Don't log anything
+        MERGE_LOG=/dev/null
+    fi
     if [ ! -z "$PATCHWORK_URLS" ]; then
         # Create a temporary directory to hold our patchwork patches.
         PATCH_COUNTER=0
@@ -112,7 +117,9 @@ merge_patchwork_patches () {
                 fi
 
                 # Record the result in a CSV file
-                echo "${PATCH_COUNTER_PADDED},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
+                if [ ! "${MERGE_LOG}" == '/dev/null' ]; then
+                    echo "${PATCH_COUNTER_PADDED},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
+                fi
             popd
 
             # If this patch failed, then we need to exit and not try any more
