@@ -21,7 +21,7 @@ BASEDIR="$(dirname "$0")"
 REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH', 'CONFIG_TYPE')
 for var in "${REQUIRED_VARS[@]}"; do
     variables_ok='yes'
-    if [ -n "${!var}" ]; then;
+    if [ -n "${!var}" ]; then
         echo "Required variable is not set: ${var}"
         variables_ok='no'
     fi
