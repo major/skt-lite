@@ -15,25 +15,43 @@
 
 # Required environment variables:
 #  KERNEL_REPO - URL or filesystem path to the kernel to clone
-#  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
-#  KERNEL_REF - ref/tag/branch to checkout within the kernel source
-#  OUTPUT_DIR - path to desired kernel output
-#  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
 #
 # Optional environment variables:
 #  KERNEL_DEPTH - depth of kernel repo to clone
 #    * default is '1' for faster cloning
 #    * set to '0' to get all git history (very slow)
+#  KERNEL_REF - ref/tag/branch to checkout within the kernel source
+#    * default is 'master'
+#    * can be set to tag, branch name, or specific commit SHA
+#  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
+#    * default is 'source' in current directory
+#  OUTPUT_DIR - path to desired kernel output
+#    * default is 'output' in current directory
+#  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
+
 
 # Ensure that the script will fail if any command returns a non-zero return
 # code, or if a piped command returns a non-zero return code.
 set -euxo pipefail
 
-# Use a shallow clone depth of 1 unless the user specified a deeper clone.
-export KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
-
-# Set a default kernel repo ref
+## Defaults
+export KERNEL_DEPTH=${KERNEL_DEPTH:-'1'}
 export KERNEL_REF=${KERNEL_REF:-"master"}
+export OUTPUT_DIR=${OUTPUT_DIR:-"output"}
+export KERNEL_DIR=${KERNEL_DIR:-"source"}
+
+## Check for unset variables that are required
+REQUIRED_VARS=('KERNEL_REPO')
+for var in "${REQUIRED_VARS[@]}"; do
+    variables_ok='yes'
+    if [ -n "${!var}" ]; then;
+        echo "Required variable is not set: ${var}"
+        variables_ok='no'
+    fi
+    if [ "${variables_ok}" == 'no']; then
+        exit 1
+    fi
+done
 
 # Set a user.name and user.email to ensure that git works properly within
 # containerized environments. OpenShift uses random UIDs and this causes git
