@@ -44,6 +44,9 @@ if grep 'FAIL$' "${PATCH_RESULTS_CSV}"; then
     exit 1
 fi
 
+# Set architecture environment variables
+setup_architecture_variables
+
 # Create the output directories if they do not exist
 BUILD_OUTPUT_DIR=${OUTPUT_DIR}/build/${KERNEL_BUILD_ARCH}
 mkdir -vp $BUILD_OUTPUT_DIR
