@@ -63,5 +63,10 @@ DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} INSTALL_MOD_STRIP=1 -j${CPU_COUNT}
 get_kernel_config ${BUILD_OUTPUT_DIR}/.config
 $DEFAULT_MAKE_OPTS olddefconfig
 
+# Clean the output directory and put the config back in place
+mv ${BUILD_OUTPUT_DIR}/.config config
+$DEFAULT_MAKE_OPTS mrproper
+mv config ${BUILD_OUTPUT_DIR}/.config
+
 # Build the kernel
 $DEFAULT_BUILD_MAKE_OPTS targz-pkg
