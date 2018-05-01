@@ -34,5 +34,6 @@ setup_repository() {
         else
             git fetch origin --depth $KERNEL_DEPTH $KERNEL_REF
         fi
+        git checkout $KERNEL_REF
     popd
 }
