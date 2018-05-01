@@ -54,7 +54,7 @@ CPU_COUNT=$(nproc)
 
 # Set up a default set of make options.
 DEFAULT_MAKE_OPTS="make -C ${KERNEL_DIR} O=${BUILD_OUTPUT_DIR}"
-DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} INSTALL_MOD_STRIP=1 -j${CPU_COUNT}"
+DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
 
 # Prepare the kernel output file
 get_kernel_config ${BUILD_OUTPUT_DIR}/.config
