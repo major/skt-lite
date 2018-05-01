@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 # Required environment variables:
 #  KERNEL_REPO - URL or filesystem path to the kernel to clone
 #  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
@@ -9,45 +8,16 @@ set -euxo pipefail
 #  KERNEL_REF - ref/tag/branch to checkout within the kernel source
 #  OUTPUT_DIR - path to desired kernel output
 #  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
-#  LOCAL_PATCHES - space-delimited list of paths to local patches
-#
-# Note: Local patches will be applied after patchwork patches.
 
-# Use a shallow clone depth of 1 unless the user specified a deeper clone.
-KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
+# Include common functions
+. "$(dirname \"$0\")/includes.sh"
 
-# Set up a name/email configuration for git
-mkdir -p $KERNEL_DIR
-pushd $KERNEL_DIR
-    git config --global user.name "SKT"
-    git config --global user.email "noreply@redhat.com"
-    git init
-    git remote add origin $KERNEL_REPO
-    if [ "$KERNEL_DEPTH" == '0' ]; then
-        git fetch origin $KERNEL_REF
-    else
-        git fetch origin --depth $KERNEL_DEPTH $KERNEL_REF
-    fi
-popd
-
-# Use the current working directory for relative paths
-if [[ ! "$OUTPUT_DIR" =~ ^[/~] ]]; then
-    OUTPUT_DIR=$(pwd)/${OUTPUT_DIR}
-fi
-
-# Set up a directory to hold all of the merge-related data
-MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge
-MERGE_LOG=${OUTPUT_DIR}/merge/merge.log
+# Set up the git repository
+setup_repository
 
 # Create the output directories if they do not exist
-mkdir -p $OUTPUT_DIR
-mkdir -p $MERGE_OUTPUT_DIR
-
-# Remove any existing merge logs
-if [ -e $MERGE_LOG ]; then
-    rm -f $MERGE_LOG
-fi
-touch $MERGE_LOG
+MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge
+mkdir -vp $MERGE_OUTPUT_DIR
 
 # Attempt to merge the patchwork patches into the repository
 if [ ! -z "$PATCHWORK_URLS" ]; then
@@ -57,12 +27,12 @@ if [ ! -z "$PATCHWORK_URLS" ]; then
     for PATCHWORK_URL in $PATCHWORK_URLS; do
         MBOX_URL=${PATCHWORK_URL%/}/mbox/
         PATCH_FILENAME=${MERGE_OUTPUT_DIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
-        echo "Downloading $MBOX_URL to $PATCH_FILENAME..." | tee -a $MERGE_LOG
-        curl -# -o $PATCH_FILENAME $MBOX_URL | tee -a $MERGE_LOG
+        echo "Downloading $MBOX_URL to $PATCH_FILENAME..."
+        curl -# -o $PATCH_FILENAME $MBOX_URL
 
         pushd $KERNEL_DIR
-            echo "Applying $PATCHWORK_URL ..." | tee -a $MERGE_LOG
-            git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG
+            echo "Applying $PATCHWORK_URL ..."
+            git am $PATCH_FILENAME 2>&1
         popd
 
         PATCH_COUNTER=$((PATCH_COUNTER+1))
