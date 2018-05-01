@@ -32,14 +32,32 @@ if [ ! -z "$PATCHWORK_URLS" ]; then
     for PATCHWORK_URL in $PATCHWORK_URLS; do
         MBOX_URL=${PATCHWORK_URL%/}/mbox/
         PATCH_FILENAME=${MERGE_OUTPUT_DIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
+
+        # Download the patch
         echo "Downloading $MBOX_URL to $PATCH_FILENAME..." | tee -a $MERGE_LOG
         curl -# -o $PATCH_FILENAME $MBOX_URL | tee -a $MERGE_LOG
 
+        # Apply the patch
         pushd $KERNEL_DIR
             echo "Applying $PATCHWORK_URL ..." | tee -a $MERGE_LOG
-            git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG
+            if git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG; then
+                PATCH_RESULT='PASS'
+            else
+                PATCH_RESULT='FAIL'
+            fi
+
+            # Record the result in a CSV file
+            echo "${PATCH_COUNTER},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
         popd
 
+        # If this patch failed, then we need to exit and not try any more
+        # patches.
+        if [ "${PATCH_RESULT}" == 'FAIL' ]; then
+            echo "The last patch failed to apply."
+            exit 1
+        fi
+
+        # Increment the patch counter for the next patch
         PATCH_COUNTER=$((PATCH_COUNTER+1))
     done
 fi
