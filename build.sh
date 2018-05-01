@@ -18,7 +18,7 @@ BASEDIR="$(dirname "$0")"
 . "${BASEDIR}/includes.sh"
 
 ## Check for unset variables that are required
-REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH', 'CONFIG_TYPE')
+REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH' 'CONFIG_TYPE')
 missing_vars=()
 for var in "${REQUIRED_VARS[@]}"; do
     test -n "${!var:+y}" || missing_vars+=("${var}")
