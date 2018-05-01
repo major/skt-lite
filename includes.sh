@@ -32,6 +32,9 @@ set -euxo pipefail
 # Use a shallow clone depth of 1 unless the user specified a deeper clone.
 export KERNEL_DEPTH="${KERNEL_DEPTH:=1}"
 
+# Set a default kernel repo ref
+export KERNEL_REF=${KERNEL_REF:-"master"}
+
 # Set a user.name and user.email to ensure that git works properly within
 # containerized environments. OpenShift uses random UIDs and this causes git
 # to ask for the current user's information, which fails.
