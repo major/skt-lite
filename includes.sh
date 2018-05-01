@@ -1,3 +1,30 @@
+# Copyright (c) 2017 Red Hat, Inc. All rights reserved. This copyrighted
+# material is made available to anyone wishing to use, modify, copy, or
+# redistribute it subject to the terms and conditions of the GNU General
+# Public License v.2 or later.
+
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+
+# Required environment variables:
+#  KERNEL_REPO - URL or filesystem path to the kernel to clone
+#  KERNEL_DIR - path to where the KERNEL_REPO should be cloned
+#  KERNEL_REF - ref/tag/branch to checkout within the kernel source
+#  OUTPUT_DIR - path to desired kernel output
+#  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
+#
+# Optional environment variables:
+#  KERNEL_DEPTH - depth of kernel repo to clone
+#    * default is '1' for faster cloning
+#    * set to '0' to get all git history (very slow)
+
 # Ensure that the script will fail if any command returns a non-zero return
 # code, or if a piped command returns a non-zero return code.
 set -euxo pipefail
