@@ -42,3 +42,7 @@ touch $MERGE_LOG
 
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches
+
+# Print the merge report to the log
+echo "\nMerge CSV report:" | tee -a $MERGE_LOG
+cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
