@@ -19,16 +19,15 @@ BASEDIR="$(dirname "$0")"
 
 ## Check for unset variables that are required
 REQUIRED_VARS=('KERNEL_REPO' 'KERNEL_BUILD_ARCH', 'CONFIG_TYPE')
-variables_ok='yes'
+missing_vars=()
 for var in "${REQUIRED_VARS[@]}"; do
-    if [ ! -z "${!var}" ]; then
-        echo "Required variable is not set: ${var}"
-        variables_ok='no'
-    fi
-    if [ "${variables_ok}" == 'no']; then
-        exit 1
-    fi
+    test -n ${!var:+y} || missing_vars+=("${var}")
 done
+if [ ${#missing_vars[@]} -ne 0 ]; then
+    echo "The following required variables are not set:" >&2
+    printf ' %q\n' "${missing_vars[@]}" >&2
+    exit 1
+fi
 
 # Check to see if merge completed properly
 MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge

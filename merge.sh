@@ -19,16 +19,15 @@ BASEDIR="$(dirname "$0")"
 
 ## Check for unset variables that are required
 REQUIRED_VARS=('KERNEL_REPO')
+missing_vars=()
 for var in "${REQUIRED_VARS[@]}"; do
-    variables_ok='yes'
-    if [ -n "${!var}" ]; then
-        echo "Required variable is not set: ${var}"
-        variables_ok='no'
-    fi
-    if [ "${variables_ok}" == 'no']; then
-        exit 1
-    fi
+    test -n ${!var:+y} || missing_vars+=("${var}")
 done
+if [ ${#missing_vars[@]} -ne 0 ]; then
+    echo "The following required variables are not set:" >&2
+    printf ' %q\n' "${missing_vars[@]}" >&2
+    exit 1
+fi
 
 # Set up the git repository
 setup_repository
