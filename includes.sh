@@ -43,7 +43,7 @@ set -euxo pipefail
 export KERNEL_DEPTH=${KERNEL_DEPTH:-'1'}
 export KERNEL_DIR=${KERNEL_DIR:-"source"}
 export KERNEL_REF=${KERNEL_REF:-"master"}
-export MAKE_OPTS=${KERNEL_DIR:-""}
+export MAKE_OPTS=${MAKE_OPTS:-""}
 export OUTPUT_DIR=${OUTPUT_DIR:-"output"}
 
 # Set a user.name and user.email to ensure that git works properly within
