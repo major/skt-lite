@@ -51,10 +51,6 @@ setup_architecture_variables
 BUILD_OUTPUT_DIR=${OUTPUT_DIR}/build/${KERNEL_BUILD_ARCH}
 mkdir -vp $BUILD_OUTPUT_DIR
 
-# Ensure the repository is ready
-setup_repository
-merge_patchwork_patches 'no_log'
-
 # Get the number of CPU cores available
 CPU_COUNT=$(nproc)
 
