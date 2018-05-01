@@ -29,11 +29,16 @@ setup_repository() {
         else
             git remote add origin $KERNEL_REPO
         fi
+        # Fetch the repository contents
+        GIT_FETCH_CMD="git fetch -n origin +${KERNEL_REF}:refs/remotes/origin/${KERNEL_REF}"
         if [ "$KERNEL_DEPTH" == '0' ]; then
-            git fetch origin $KERNEL_REF
+            $GIT_FETCH_CMD
         else
-            git fetch origin --depth $KERNEL_DEPTH $KERNEL_REF
+            $GIT_FETCH_CMD --depth $KERNEL_DEPTH $KERNEL_REF
         fi
-        git checkout $KERNEL_REF
+        # Ensure we have checked out the correct kernel ref and the directory
+        # is clean.
+        git checkout -q --detach refs/remotes/origin/${KERNEL_REF}
+        git reset --hard refs/remotes/origin/${KERNEL_REF}
     popd
 }
