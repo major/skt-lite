@@ -31,7 +31,8 @@ if [ ! -z "$PATCHWORK_URLS" ]; then
     # Loop through the patches and download them.
     for PATCHWORK_URL in $PATCHWORK_URLS; do
         MBOX_URL=${PATCHWORK_URL%/}/mbox/
-        PATCH_FILENAME=${MERGE_OUTPUT_DIR}/$(printf "%03d" ${PATCH_COUNTER}).patch
+        PATCH_COUNTER_PADDED=$(printf "%03d" ${PATCH_COUNTER})
+        PATCH_FILENAME=${MERGE_OUTPUT_DIR}/${PATCH_COUNTER_PADDED}.patch
 
         # Download the patch
         echo "Downloading $MBOX_URL to $PATCH_FILENAME..." | tee -a $MERGE_LOG
@@ -47,7 +48,7 @@ if [ ! -z "$PATCHWORK_URLS" ]; then
             fi
 
             # Record the result in a CSV file
-            echo "${PATCH_COUNTER},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
+            echo "${PATCH_COUNTER_PADDED},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
         popd
 
         # If this patch failed, then we need to exit and not try any more
