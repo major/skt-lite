@@ -10,7 +10,8 @@
 #  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
 
 # Include common functions
-. "$(dirname \"$0\")/includes.sh"
+BASEDIR="$(dirname "$0")"
+. "${BASEDIR}/includes.sh"
 
 # Set up the git repository
 setup_repository
