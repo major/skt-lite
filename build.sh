@@ -49,14 +49,15 @@ setup_architecture_variables
 
 # Create the output directories if they do not exist
 BUILD_OUTPUT_DIR=${OUTPUT_DIR}/build/${KERNEL_BUILD_ARCH}
-mkdir -vp $BUILD_OUTPUT_DIR
+KBUILD_OUTPUT_DIR=${BUILD_OUTPUT_DIR}/kbuild_output
+mkdir -vp $BUILD_OUTPUT_DIR $KBUILD_OUTPUT_DIR
 
 # Get the number of CPU cores available
 CPU_COUNT=$(nproc)
 
 # Set up a default set of make options.
 DEFAULT_MAKE_OPTS="make -C ${KERNEL_DIR}"
-DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} O=${BUILD_OUTPUT_DIR} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
+DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} O=${KBUILD_OUTPUT_DIR} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
 
 # Prepare the kernel output file
 get_kernel_config ${KERNEL_DIR}/.config
@@ -69,7 +70,16 @@ $DEFAULT_MAKE_OPTS kernelrelease | tail -n 1 > ${BUILD_OUTPUT_DIR}/kernelrelease
 # Clean the output directory and put the config back in place
 mv ${KERNEL_DIR}/.config config
 $DEFAULT_MAKE_OPTS mrproper
-mv config ${BUILD_OUTPUT_DIR}/.config
+mv config ${KBUILD_OUTPUT_DIR}/.config
 
-# Build the kernel
-$DEFAULT_BUILD_MAKE_OPTS targz-pkg
+# Build the kernel and find the tarball in the output
+$DEFAULT_BUILD_MAKE_OPTS targz-pkg 2>&1 | tee -a ${BUILD_OUTPUT_DIR}/build.log
+if grep "Tarball successfully created" ${BUILD_OUTPUT_DIR}/build.log; then
+    GREP_PATTERN="Tarball successfully created in \.\/\K(linux.*)"
+    KERNEL_TARBALL=$(grep -oP $GREP_PATTERN ${BUILD_OUTPUT_DIR}/build.log)
+fi
+
+# Clean up
+gzip ${BUILD_OUTPUT_DIR}/build.log
+mv ${KBUILD_OUTPUT_DIR}/${KERNEL_TARBALL} ${BUILD_OUTPUT_DIR}
+rm -rf ${KBUILD_OUTPUT_DIR}
