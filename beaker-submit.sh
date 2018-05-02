@@ -30,7 +30,7 @@ if [ ${#missing_vars[@]} -ne 0 ]; then
 fi
 
 BUILD_ARCHES=$(echo "${KERNEL_BUILD_ARCHES}" | tr ',' '\n')
-for BUILD_ARCH in "${BUILD_ARCHES}"; do
+for BUILD_ARCH in $BUILD_ARCHES; do
 
     # The source template has variable names that will be replaced with real
     # values based on data from the build.
