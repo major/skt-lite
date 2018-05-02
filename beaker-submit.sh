@@ -65,6 +65,7 @@ for BUILD_ARCH in "${BUILD_ARCHES}"; do
     KPKG_URL="${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/${TARBALL_FILENAME}"
 
     # Replace variables in the template
+    sed -i "s/##ARCH##/${BUILD_ARCH}/g" $BEAKER_JOB_FILE
     sed -i "s/##KVER##/${KVER}/g" $BEAKER_JOB_FILE
     sed -i "s/##GITSHA##/${GITSHA}/g" $BEAKER_JOB_FILE
     sed -i "s/##BUILD_NAME##/${BUILD_NAME}/g" $BEAKER_JOB_FILE
