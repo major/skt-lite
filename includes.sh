@@ -44,6 +44,7 @@
 set -euxo pipefail
 
 ## Defaults
+export BEAKER_JOB_OWNER=${BEAKER_JOB_OWNER:-''}
 export KERNEL_DEPTH=${KERNEL_DEPTH:-'1'}
 export KERNEL_DIR=${KERNEL_DIR:-"source"}
 export KERNEL_REF=${KERNEL_REF:-"master"}
