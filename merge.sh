@@ -42,7 +42,7 @@ touch $MERGE_LOG
 
 # Log the hash of the last commit before any patches are applied
 pushd $KERNEL_DIR
-    git rev-parse HEAD > ${BUILD_OUTPUT_DIR}/sha_before_patches.txt
+    git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_before_patches.txt
 popd
 
 # Attempt to merge the patchwork patches into the repository
@@ -54,5 +54,5 @@ cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
 
 # Log the hash of the last commit including the current set of patches
 pushd $KERNEL_DIR
-    git rev-parse HEAD > ${BUILD_OUTPUT_DIR}/sha_after_patches.txt
+    git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_after_patches.txt
 popd
