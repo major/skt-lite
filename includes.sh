@@ -92,9 +92,6 @@ setup_repository () {
 
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches () {
-    if [ "${LOGGING_ENABLED}" == 'no' ]; then
-        $MERGE_LOG=/dev/null
-    fi
     if [ ! -z "$PATCHWORK_URLS" ]; then
         # Create a temporary directory to hold our patchwork patches.
         PATCH_COUNTER=0

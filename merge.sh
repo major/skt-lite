@@ -37,13 +37,19 @@ MERGE_OUTPUT_DIR=${OUTPUT_DIR}/merge
 mkdir -vp $MERGE_OUTPUT_DIR
 
 # Create a log file
-MERGE_LOG=${OUTPUT_DIR}/merge/merge.log
-touch $MERGE_LOG
+if [ "${LOGGING_ENABLED}" == 'yes' ]; then
+    MERGE_LOG=${OUTPUT_DIR}/merge/merge.log
+    touch $MERGE_LOG
+else
+    MERGE_LOG=/dev/null
+fi
 
 # Log the hash of the last commit before any patches are applied
-pushd $KERNEL_DIR
-    git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_before_patches.txt
-popd
+if [ "${LOGGING_ENABLED}" == 'yes' ]; then
+    pushd $KERNEL_DIR
+        git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_before_patches.txt
+    popd
+fi
 
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches
@@ -53,6 +59,8 @@ echo "\nMerge CSV report:" | tee -a $MERGE_LOG
 cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
 
 # Log the hash of the last commit including the current set of patches
-pushd $KERNEL_DIR
-    git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_after_patches.txt
-popd
+if [ "${LOGGING_ENABLED}" == 'yes' ]; then
+    pushd $KERNEL_DIR
+        git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_after_patches.txt
+    popd
+fi
