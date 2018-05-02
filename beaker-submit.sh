@@ -52,13 +52,16 @@ for BUILD_ARCH in "${BUILD_ARCHES}"; do
     BUILD_WEBSERVER_URL_BASE="http://${BUILD_SERVER_ROUTE_HOSTNAME}/skt-lite-pipeline/${BUILD_NUMBER}"
 
     # Get the git SHA of the kernel after patches were applied.
-    GITSHA=$(curl -s "${BUILD_WEBSERVER_URL_BASE}/merge/sha_after_patches.txt")
+    GITSHA_URL="${BUILD_WEBSERVER_URL_BASE}/merge/sha_after_patches.txt"
+    GITSHA=$(curl -s "${GITSHA_URL}")
 
     # Get the kernel version that was built
-    KVER=$(curl -s "${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/kernelrelease.txt")
+    KVER_URL="${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/kernelrelease.txt"
+    KVER=$(curl -s "${KVER_URL}")
 
     # Get the URL to the tarball of the built kernel
-    TARBALL_FILENAME=$(curl -s "${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/kerneltarball.txt")
+    TARBALL_FILENAME_URL="${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/kerneltarball.txt"
+    TARBALL_FILENAME=$(curl -s "${TARBALL_FILENAME_URL}")
     KPKG_URL="${BUILD_WEBSERVER_URL_BASE}/build/${BUILD_ARCH}/${TARBALL_FILENAME}"
 
     # Replace variables in the template
