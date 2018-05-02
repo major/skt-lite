@@ -40,9 +40,19 @@ mkdir -vp $MERGE_OUTPUT_DIR
 MERGE_LOG=${OUTPUT_DIR}/merge/merge.log
 touch $MERGE_LOG
 
+# Log the hash of the last commit before any patches are applied
+pushd $KERNEL_DIR
+    git rev-parse HEAD > ${BUILD_OUTPUT_DIR}/sha_before_patches.txt
+popd
+
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches
 
 # Print the merge report to the log
 echo "\nMerge CSV report:" | tee -a $MERGE_LOG
 cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
+
+# Log the hash of the last commit including the current set of patches
+pushd $KERNEL_DIR
+    git rev-parse HEAD > ${BUILD_OUTPUT_DIR}/sha_after_patches.txt
+popd

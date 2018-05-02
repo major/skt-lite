@@ -61,6 +61,10 @@ DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} O=${BUILD_OUTPUT_DIR} INSTALL_MOD_
 # Prepare the kernel output file
 get_kernel_config ${KERNEL_DIR}/.config
 $DEFAULT_MAKE_OPTS olddefconfig
+${KERNEL_DIR}/scripts/config --file ${KERNEL_DIR}/.config --disable debug_info
+
+# Log the release version number
+$DEFAULT_MAKE_OPTS kernelrelease | tail -n 1 > ${BUILD_OUTPUT_DIR}/kernelrelease.txt
 
 # Clean the output directory and put the config back in place
 mv ${KERNEL_DIR}/.config config
