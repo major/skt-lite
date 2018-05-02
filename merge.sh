@@ -55,7 +55,8 @@ fi
 merge_patchwork_patches
 
 # Print the merge report to the log
-echo "\nMerge CSV report:" | tee -a $MERGE_LOG
+echo "-----"
+echo "Merge CSV report:" | tee -a $MERGE_LOG
 cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
 
 # Log the hash of the last commit including the current set of patches
