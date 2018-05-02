@@ -76,7 +76,7 @@ mv config ${KBUILD_OUTPUT_DIR}/.config
 $DEFAULT_BUILD_MAKE_OPTS targz-pkg 2>&1 | tee -a ${BUILD_OUTPUT_DIR}/build.log
 if grep "Tarball successfully created" ${BUILD_OUTPUT_DIR}/build.log; then
     GREP_PATTERN="Tarball successfully created in \.\/\K(linux.*)"
-    KERNEL_TARBALL=$(grep -oP $GREP_PATTERN ${BUILD_OUTPUT_DIR}/build.log)
+    KERNEL_TARBALL=$(grep -oP "$GREP_PATTERN" ${BUILD_OUTPUT_DIR}/build.log)
 fi
 
 # Clean up
