@@ -33,6 +33,8 @@
 #  PATCHWORK_URLS - space-delimited list of patchwork URLs to merge (in order)
 #  CONFIG_URL - URL to kernel config file (if CONFIG_TYPE=='url')
 #  MAKE_OPTS - Additional options and arguments to pass to make
+#  LOGGING_ENABLED - Enable logging to output directory
+#    * default is 'yes'; 'no' disables logging
 
 
 # Ensure that the script will fail if any command returns a non-zero return
@@ -43,6 +45,7 @@ set -euxo pipefail
 export KERNEL_DEPTH=${KERNEL_DEPTH:-'1'}
 export KERNEL_DIR=${KERNEL_DIR:-"source"}
 export KERNEL_REF=${KERNEL_REF:-"master"}
+export LOGGING_ENABLED=${LOGGING_ENABLED:-"yes"}
 export MAKE_OPTS=${MAKE_OPTS:-""}
 export OUTPUT_DIR=${OUTPUT_DIR:-"output"}
 
@@ -89,10 +92,8 @@ setup_repository () {
 
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches () {
-    OPTIONS=${1:-''}
-    if [[ $OPTIONS =~ .*no_log.* ]]; then
-        # Don't log anything
-        MERGE_LOG=/dev/null
+    if [ "${LOGGING_ENABLED}" == 'no' ]; then
+        $MERGE_LOG=/dev/null
     fi
     if [ ! -z "$PATCHWORK_URLS" ]; then
         # Create a temporary directory to hold our patchwork patches.
@@ -117,7 +118,7 @@ merge_patchwork_patches () {
                 fi
 
                 # Record the result in a CSV file
-                if [ ! "${MERGE_LOG}" == '/dev/null' ]; then
+                if [ "${LOGGING_ENABLED}" == 'yes' ]; then
                     echo "${PATCH_COUNTER_PADDED},${PATCHWORK_URL},${PATCH_RESULT}" >> ${MERGE_OUTPUT_DIR}/patch_results.csv
                 fi
             popd
