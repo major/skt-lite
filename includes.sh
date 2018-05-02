@@ -35,6 +35,7 @@
 #  MAKE_OPTS - Additional options and arguments to pass to make
 #  LOGGING_ENABLED - Enable logging to output directory
 #    * default is 'yes'; 'no' disables logging
+#  BEAKER_JOB_OWNER - Delegate beaker job to another user
 
 
 # Ensure that the script will fail if any command returns a non-zero return
