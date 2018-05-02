@@ -18,6 +18,7 @@
 #  CONFIG_TYPE - kernel configuration file type
 #    * 'rh-configs': build Red Hat kernel configs and choose one based on arch
 #    * 'url': download a config from a URL
+#    * 'tinyconfig': build a very small config for quick tests
 #
 # Optional environment variables:
 #  KERNEL_DEPTH - depth of kernel repo to clone
@@ -191,11 +192,19 @@ setup_architecture_variables () {
 # URL.
 get_kernel_config () {
     CONFIG_DEST=$1
-    if [ "${CONFIG_TYPE}" == 'rh-configs' ]; then
+    case "$CONFIG_TYPE" in
+    rh-configs)
         build_redhat_configs $CONFIG_DEST
-    elif [ "${CONFIG_TYPE}" == 'url' ]; then
+        ;;
+    tinyconfig)
+        build_tinyconfig $CONFIG_DEST
+        ;;
+    url)
         curl -# -O $CONFIG_DEST $CONFIG_URL
-    fi
+        ;;
+    *)
+        echo "The provided config type is not supported: $CONFIG_TYPE"
+    esac
 }
 
 # Generate the Red Hat configuration files and copy the config that matches
@@ -205,4 +214,12 @@ build_redhat_configs () {
     echo "Building Red Hat configs with 'make rh-configs'..."
     make -C $KERNEL_DIR rh-configs
     cp -v $KERNEL_DIR/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
+}
+
+# Build a tiny config for quick testing
+build_tinyconfig () {
+    CONFIG_DEST=$1
+    echo "Building tinyconfig..."
+    make -C $KERNEL_DIR tinyconfig
+    cp -v $KERNEL_DIR/.config $CONFIG_DEST
 }
