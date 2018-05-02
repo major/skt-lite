@@ -65,7 +65,9 @@ for BUILD_ARCH in "${BUILD_ARCHES}"; do
     sed -i "s/##KVER##/${KVER}/g" $BEAKER_JOB_FILE
     sed -i "s/##GITSHA##/${GITSHA}/g" $BEAKER_JOB_FILE
     sed -i "s/##BUILD_NAME##/${BUILD_NAME}/g" $BEAKER_JOB_FILE
-    sed -i "s/##KPKG_URL##/${KPKG_URL}/g" $BEAKER_JOB_FILE
+    # NOTE(mhayden): The URL has forward slashes in it. That will cause issues
+    # with sed, so we use a different delimiter here.
+    sed -i "s^##KPKG_URL##^${KPKG_URL}^g" $BEAKER_JOB_FILE
     sed -i "s/##KVER##/${KVER}/g" $BEAKER_JOB_FILE
 
     # Set up the beaker job-submit command
