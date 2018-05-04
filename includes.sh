@@ -127,12 +127,21 @@ merge_patchwork_patches () {
             # patches.
             if [ "${PATCH_RESULT}" == 'FAIL' ]; then
                 echo "The last patch failed to apply."
-                exit 1
+                break
             fi
 
             # Increment the patch counter for the next patch
             PATCH_COUNTER=$((PATCH_COUNTER+1))
         done
+
+        # Print the merge report to the log
+        echo "-----"
+        echo "Merge CSV report:" | tee -a $MERGE_LOG
+        cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
+
+        if [ "${PATCH_RESULT}" == 'FAIL' ]; then
+            exit 1;
+        fi
     fi
 }
 

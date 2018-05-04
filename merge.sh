@@ -54,11 +54,6 @@ fi
 # Attempt to merge the patchwork patches into the repository
 merge_patchwork_patches
 
-# Print the merge report to the log
-echo "-----"
-echo "Merge CSV report:" | tee -a $MERGE_LOG
-cat ${MERGE_OUTPUT_DIR}/patch_results.csv | tee -a $MERGE_LOG
-
 # Log the hash of the last commit including the current set of patches
 if [ "${LOGGING_ENABLED}" == 'yes' ]; then
     pushd $KERNEL_DIR
