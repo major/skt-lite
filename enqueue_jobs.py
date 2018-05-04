@@ -205,8 +205,7 @@ for repo_name, repo_data in repos:
             'BUILDER_OS': cfg.get(repo_name, 'builder_os'),
             'DISPLAY_NAME': display_name
         }
-        # jenkins_reply = send_to_jenkins(
-        #     job_params=jenkins_job_params,
-        #     build_cause=series['url'],
-        # )
-        # print(jenkins_reply)
+        jenkins_reply = send_to_jenkins(
+            job_params=jenkins_job_params,
+            build_cause=series['url'],
+        )
