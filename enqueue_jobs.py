@@ -23,20 +23,14 @@ import six.moves.configparser as configparser
 # Get the absolute path to the directory holding this script
 SCRIPT_DIR=os.path.dirname(os.path.abspath(__file__))
 
-# Set a list of known patchwork-ci.ini locations
-CONFIG_FILES=[
-    '/etc/patchwork-ci.ini',
-    os.path.expanduser('~/patchwork-ci.ini')
-]
-
 logging.basicConfig(level=logging.INFO)
 
 
-def read_config_file():
+def read_config_file(config_file):
     """Read a patchwork-ci.ini file and return a configparser object"""
     global cfg
     cfg = configparser.ConfigParser()
-    cfg.read(CONFIG_FILES)
+    cfg.read(config_file)
     return cfg
 
 
@@ -62,6 +56,12 @@ def write_state_file(state_file, new_state):
 def handle_arguments():
     """Takes arguments from the command line"""
     parser = argparse.ArgumentParser(description='Enqueue Kernel CI Jobs')
+    parser.add_argument(
+        '--config-file',
+        type=str,
+        help='config file (required)',
+        required='True',
+    )
     parser.add_argument(
         '--state-file',
         type=str,
@@ -159,7 +159,7 @@ def send_to_jenkins(job_params, build_cause=None):
 
 # Set up our script
 args = handle_arguments()
-cfg = read_config_file()
+cfg = read_config_file(args.config_file)
 repos = get_repos()
 state = read_state_file(args.state_file)
 
