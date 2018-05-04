@@ -40,9 +40,7 @@ def read_state_file(state_file):
         with open(state_file, 'r') as fileh:
             return yaml.load(fileh.read())
     else:
-        state = {}
-    print(state)
-    return state
+        return {}
 
 
 def write_state_file(state_file, new_state):
