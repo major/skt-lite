@@ -65,7 +65,7 @@ $DEFAULT_MAKE_OPTS olddefconfig
 ${KERNEL_DIR}/scripts/config --file ${KERNEL_DIR}/.config --disable debug_info
 
 # Log the release version number
-$DEFAULT_MAKE_OPTS kernelrelease | tail -n 1 > ${BUILD_OUTPUT_DIR}/kernelrelease.txt
+$DEFAULT_MAKE_OPTS kernelrelease | tee -a ${BUILD_OUTPUT_DIR}/build.log | grep ^linux- > ${BUILD_OUTPUT_DIR}/kernelrelease.txt
 
 # Clean the output directory and put the config back in place
 mv ${KERNEL_DIR}/.config config
