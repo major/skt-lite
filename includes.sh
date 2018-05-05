@@ -237,8 +237,6 @@ build_redhat_configs () {
 
 # Build a tiny config for quick testing
 build_tinyconfig () {
-    CONFIG_DEST=$1
     echo "Building tinyconfig..."
     make -C $KERNEL_DIR tinyconfig
-    cp -v $KERNEL_DIR/.config $CONFIG_DEST
 }
