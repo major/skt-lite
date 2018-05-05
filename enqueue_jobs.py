@@ -176,6 +176,12 @@ for repo_name, repo_data in repos:
         last_series_seen = state[repo_name]['last_series_seen']
 
     # Get the list of series for this repo from Patchwork
+    logging.info(
+        "Retrieving new patch series list for {} (last seen: {})".format(
+            repo_data['patchwork_project'],
+            last_series_seen
+        )
+    )
     series_list = get_patch_series(
         patchwork_url=repo_data['patchwork_url'],
         patchwork_project=repo_data['patchwork_project'],
