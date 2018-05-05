@@ -120,7 +120,7 @@ merge_patchwork_patches () {
                 # There is a chance that this patch has been applied to the
                 # repository already. If so, we should find "Patch is empty"
                 # in the output.
-                if [[ $GIT_OUTPUT =~ .*Patch is empty.* ]]; then
+                if [[ "$GIT_OUTPUT" =~ "Patch is empty" ]]; then
                     echo "Patch is already applied. Cleaning up."
                     git am --abort
                     PATCH_RESULT='PASS'
