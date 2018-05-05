@@ -107,6 +107,9 @@ def get_patch_series(patchwork_url, patchwork_project, last_series_seen=0):
             # If we reached the patch that we saw on the last run, stop and
             # return our current list.
             if int(series['id']) <= int(last_series_seen):
+                logging.info(
+                    "Reached last seen series: {}".format(last_series_seen)
+                )
                 return series_list
 
             # Add this series to our list
