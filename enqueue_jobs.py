@@ -36,6 +36,7 @@ def read_config_file(config_file):
 
 def read_state_file(state_file):
     """Read the state file"""
+    logging.info("Reading state file: {}".format(state_file))
     if os.path.isfile(state_file):
         with open(state_file, 'r') as fileh:
             return yaml.load(fileh.read())
@@ -45,6 +46,7 @@ def read_state_file(state_file):
 
 def write_state_file(state_file, new_state):
     """Write the state file"""
+    logging.info("Writing state file: {}".format(state_file))
     with open(state_file, 'w') as fileh:
         fileh.write(
             yaml.dump(new_state, default_flow_style=False)
