@@ -215,8 +215,11 @@ get_kernel_config () {
     rh-configs)
         build_redhat_configs $CONFIG_DEST
         ;;
+    defconfig)
+        build_defconfig
+        ;;
     tinyconfig)
-        build_tinyconfig $CONFIG_DEST
+        build_tinyconfig
         ;;
     url)
         curl -# -O $CONFIG_DEST $CONFIG_URL
@@ -239,4 +242,10 @@ build_redhat_configs () {
 build_tinyconfig () {
     echo "Building tinyconfig..."
     make -C $KERNEL_DIR tinyconfig
+}
+
+# Build a default configuration file for the architecture
+build_defconfig () {
+    echo "Building defconfig..."
+    make ARCH=${ARCH} -C $KERNEL_DIR defconfig
 }
