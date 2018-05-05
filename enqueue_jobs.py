@@ -164,6 +164,7 @@ repos = get_repos()
 state = read_state_file(args.state_file)
 
 for repo_name, repo_data in repos:
+    logging.info("Starting work for {}".format(repo_name))
     # If this is the first time we have seen this repo, ensure it exists
     # in the state file.
     if repo_name not in state.keys():
