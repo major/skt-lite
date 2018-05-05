@@ -111,10 +111,19 @@ merge_patchwork_patches () {
             # Apply the patch
             pushd $KERNEL_DIR
                 echo "Applying $PATCHWORK_URL ..." | tee -a $MERGE_LOG
-                if git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG; then
+                if GIT_OUTPUT=$(git am $PATCH_FILENAME 2>&1 | tee -a $MERGE_LOG); then
                     PATCH_RESULT='PASS'
                 else
                     PATCH_RESULT='FAIL'
+                fi
+
+                # There is a chance that this patch has been applied to the
+                # repository already. If so, we should find "Patch is empty"
+                # in the output.
+                if [[ $GIT_OUTPUT =~ .*Patch is empty.* ]]; then
+                    echo "Patch is already applied. Cleaning up."
+                    git am --abort
+                    PATCH_RESULT='PASS'
                 fi
 
                 # Record the result in a CSV file
