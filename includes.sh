@@ -222,7 +222,7 @@ get_kernel_config () {
         build_tinyconfig
         ;;
     url)
-        curl -# -o $CONFIG_DEST "${CONFIG_URL}"
+        curl -# -o $CONFIG_DEST $CONFIG_URL
         ;;
     *)
         echo "The provided config type is not supported: $CONFIG_TYPE"
