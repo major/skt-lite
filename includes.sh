@@ -221,6 +221,9 @@ get_kernel_config () {
     tinyconfig)
         build_tinyconfig
         ;;
+    fedora-config)
+        get_fedora_config $CONFIG_DEST
+        ;;
     url)
         curl -# -o $CONFIG_DEST $CONFIG_URL
         ;;
@@ -236,6 +239,14 @@ build_redhat_configs () {
     echo "Building Red Hat configs with 'make rh-configs'..."
     make -C $KERNEL_DIR rh-configs
     cp -v $KERNEL_DIR/configs/kernel-*-${KERNEL_BUILD_ARCH}.config $CONFIG_DEST
+}
+
+# Get the latest config from Fedora's master branch
+get_fedora_config () {
+    CONFIG_DEST=$1
+    echo "Downloading Fedora config file..."
+    FEDORA_CONFIG_URL="https://src.fedoraproject.org/cgit/rpms/kernel.git/plain/kernel-${KERNEL_BUILD_ARCH}.config"
+    curl -s -o $CONFIG_DEST $FEDORA_CONFIG_URL
 }
 
 # Build a tiny config for quick testing
