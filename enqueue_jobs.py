@@ -199,24 +199,34 @@ for repo_name, repo_data in repos:
         write_state_file(args.state_file, state)
 
     for series in series_list:
+        # The easiest way to get a path to the patch is to strip the /mbox/
+        # off the end of the mbox URL.
         patchwork_urls = [
             x['mbox'].rstrip('/mbox/') for x in series['patches']
         ]
+        # Set a nice displayname for the job
         display_name = "{} | {} | {}".format(
             cfg.get(repo_name, 'patchwork_project'),
             series['id'],
             series['name']
         )
+        # Assemble the parameters to pass to Jenkins
         jenkins_job_params = {
             'KERNEL_REPO': cfg.get(repo_name, 'repo_url'),
             'KERNEL_REF': cfg.get(repo_name, 'repo_branch'),
             'PATCHWORK_URLS': ' '.join(patchwork_urls),
             'CONFIG_TYPE': cfg.get(repo_name, 'config_type'),
-            'CONFIG_URL': cfg.get(repo_name, 'config_url'),
             'KERNEL_BUILD_ARCHES': cfg.get(repo_name, 'build_arches'),
             'BUILDER_OS': cfg.get(repo_name, 'builder_os'),
             'DISPLAY_NAME': display_name
         }
+        # Get the config_url option if the config_type is 'url'
+        if cfg.get(repo_name, 'config_type') == 'url':
+            jenkins_job_params['CONFIG_URL'] = cfg.get(
+                repo_name,
+                'config_url'
+            )
+        # Send the job to Jenkins to run
         jenkins_reply = send_to_jenkins(
             job_params=jenkins_job_params,
             build_cause=series['url'],
