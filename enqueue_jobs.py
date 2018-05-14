@@ -10,10 +10,9 @@ from __future__ import (
 )
 
 import argparse
-import json
 import logging
-import mailbox
 import os
+import re
 import yaml
 
 import requests
@@ -21,13 +20,13 @@ import requests
 import six.moves.configparser as configparser
 
 # Get the absolute path to the directory holding this script
-SCRIPT_DIR=os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 logging.basicConfig(level=logging.INFO)
 
 
 def read_config_file(config_file):
-    """Read a patchwork-ci.ini file and return a configparser object"""
+    """Read a patchwork-ci.ini file and return a configparser object."""
     global cfg
     cfg = configparser.ConfigParser()
     cfg.read(config_file)
@@ -35,7 +34,7 @@ def read_config_file(config_file):
 
 
 def read_state_file(state_file):
-    """Read the state file"""
+    """Read the state file."""
     logging.info("Reading state file: {}".format(state_file))
     if os.path.isfile(state_file):
         with open(state_file, 'r') as fileh:
@@ -45,7 +44,7 @@ def read_state_file(state_file):
 
 
 def write_state_file(state_file, new_state):
-    """Write the state file"""
+    """Write the state file."""
     logging.info("Writing state file: {}".format(state_file))
     with open(state_file, 'w') as fileh:
         fileh.write(
@@ -54,7 +53,7 @@ def write_state_file(state_file, new_state):
 
 
 def handle_arguments():
-    """Takes arguments from the command line"""
+    """Take arguments from the command line."""
     parser = argparse.ArgumentParser(description='Enqueue Kernel CI Jobs')
     parser.add_argument(
         '--config-file',
@@ -73,7 +72,7 @@ def handle_arguments():
 
 
 def get_repos():
-    """Get repository configurations from config file"""
+    """Get repository configurations from config file."""
     logging.info("Reading configuration file")
     repo_configs = (
         x for x in cfg._sections.items() if x[0].startswith('repo:')
@@ -82,7 +81,7 @@ def get_repos():
 
 
 def get_patch_series(patchwork_url, patchwork_project, last_series_seen=0):
-    """Retrieve a list of patch series from Patchwork server for a project"""
+    """Retrieve a list of patch series from Patchwork server for a project."""
     page = 1
     series_list = []
     while True:
@@ -127,14 +126,41 @@ def get_patch_series(patchwork_url, patchwork_project, last_series_seen=0):
     return series_list
 
 
+def get_patchwork_urls(patch_list):
+    """
+    Take a list of patches, sort them, and return patchwork urls.
+
+    Patchwork gathers patches into series but it does not put those patches
+    in order. This function sorts the patches based on the #/# counts provided
+    in the patch subject line and returns the Patchwork URLs to each patch.
+    """
+    def get_patch_number(patch):
+        pattern = r"\[.*(\d+)/\d+.*\]"
+        result = re.search(pattern, patch['name'])
+        if result:
+            return result.group(1)
+        else:
+            False
+
+    if len(patch_list) > 1:
+        urls = [
+            x['mbox'].rstrip('/mbox/') for x in
+            sorted(patch_list, key=get_patch_number)
+        ]
+    else:
+        urls = [x['mbox'].rstrip('/mbox/') for x in patch_list]
+
+    return urls
+
+
 def get_mbox(mbox_url):
-    """Retrieve an mbox file and parse it"""
+    """Retrieve an mbox file and parse it."""
     r = requests.get(mbox_url)
     return r.content
 
 
 def send_to_jenkins(job_params, build_cause=None):
-    """Sends a job to Jenkins to build"""
+    """Send a job to Jenkins to build."""
     jenkins_url = "{}/job/{}/buildWithParameters".format(
         cfg.get('config', 'jenkins_url').rstrip('/'),
         cfg.get('config', 'jenkins_pipeline')
@@ -199,11 +225,8 @@ for repo_name, repo_data in repos:
         write_state_file(args.state_file, state)
 
     for series in series_list:
-        # The easiest way to get a path to the patch is to strip the /mbox/
-        # off the end of the mbox URL.
-        patchwork_urls = [
-            x['mbox'].rstrip('/mbox/') for x in series['patches']
-        ]
+        # Get a sorted list of patchwork URLs
+        patchwork_urls = get_patchwork_urls(series['patches'])
         # Set a nice displayname for the job
         display_name = "{} | {} | {}".format(
             cfg.get(repo_name, 'patchwork_project'),
