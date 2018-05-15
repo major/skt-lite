@@ -138,7 +138,7 @@ def get_patchwork_urls(patch_list):
         pattern = r"\[.*(\d+)/\d+.*\]"
         result = re.search(pattern, patch['name'])
         if result:
-            return result.group(1)
+            return int(result.group(1))
         else:
             False
 
