@@ -84,6 +84,11 @@ for BUILD_ARCH in $BUILD_ARCHES; do
     fi
 
     # Submit the job to beaker
-    $BKR_CMD $BEAKER_JOB_FILE 2>&1 | tee -a ${OUTPUT_DIR}/build/${BUILD_ARCH}/beaker.log
+    # NOTE(mhayden): There are lots of challenges with s390x in the Beaker
+    # environment, so we will avoid sending any s390x Beaker jobs there for
+    # now.
+    if [ ! "${BUILD_ARCH}" == 's390x' ]; then
+        $BKR_CMD $BEAKER_JOB_FILE 2>&1 | tee -a ${OUTPUT_DIR}/build/${BUILD_ARCH}/beaker.log
+    fi
 
 done
