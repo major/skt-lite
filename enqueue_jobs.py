@@ -135,7 +135,10 @@ def get_patchwork_urls(patch_list):
     in the patch subject line and returns the Patchwork URLs to each patch.
     """
     def get_patch_number(patch):
-        pattern = r"\[.*(\d+)/\d+.*\]"
+        # NOTE: The non-greedy modifier (?) after the first dotall in the
+        # regex is critical. That ensures that we match all of the numbers
+        # before the slash in the patch name.
+        pattern = r"\[.*?(\d+)/\d+.*?\]"
         result = re.search(pattern, patch['name'])
         if result:
             return int(result.group(1))
