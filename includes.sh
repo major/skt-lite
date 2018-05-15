@@ -64,6 +64,24 @@ if [[ ! "$OUTPUT_DIR" =~ ^[/~] ]]; then
     OUTPUT_DIR=$(pwd)/${OUTPUT_DIR}
 fi
 
+# Set up a file to hold the state of the build
+STATE_FILE=${OUTPUT_DIR}/statefile
+touch $STATE_FILE
+
+# Write state to the state file
+write_state () {
+    KEY=$1
+    VALUE=$2
+
+    if grep "^${KEY}" $STATE_FILE; then
+        # If the key already exists in the state file, we need to replace it
+        sed -i 's#^${KEY}.*#${KEY}="${VALUE}"#' $STATE_FILE
+    else
+        # Append the key since it does not exist
+        echo "${KEY}=\"${VALUE}\"" >> $STATE_FILE
+    fi
+}
+
 # Set up the git repository
 setup_repository () {
     if [ -d "$KERNEL_DIR" ]; then
