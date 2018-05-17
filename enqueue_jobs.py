@@ -117,11 +117,6 @@ def get_repos():
 
 def get_patch_series(patchwork_url, patchwork_project, series_id):
     """Retrieve a single patch series from Patchwork."""
-    # payload = {
-    #     "project": patchwork_project,
-    #     "order": "-id",  # read newest patches first
-    #     "page": page,  # page number to retrieve
-    # }
     url = "{}/api/series/{}".format(
         patchwork_url.rstrip('/'),
         series_id
