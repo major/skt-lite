@@ -59,6 +59,11 @@ CPU_COUNT=$(nproc)
 DEFAULT_MAKE_OPTS="make -C ${KERNEL_DIR}"
 DEFAULT_BUILD_MAKE_OPTS="${DEFAULT_MAKE_OPTS} O=${KBUILD_OUTPUT_DIR} INSTALL_MOD_STRIP=1 -j${CPU_COUNT} ${MAKE_OPTS}"
 
+# Unpack kernel source from merge step
+pushd $KERNEL_DIR
+    tar xf ${OUTPUT_DIR}/patched_kernel_source.tgz
+popd
+
 # Prepare the kernel output file
 get_kernel_config ${KERNEL_DIR}/.config
 $DEFAULT_MAKE_OPTS olddefconfig

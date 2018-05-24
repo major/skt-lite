@@ -60,3 +60,6 @@ if [ "${LOGGING_ENABLED}" == 'yes' ]; then
         git rev-parse HEAD > ${MERGE_OUTPUT_DIR}/sha_after_patches.txt
     popd
 fi
+
+# Store the kernel in the output directory to use with the build
+git archive HEAD --format tgz --output ${OUTPUT_DIR}/patched_kernel_source.tgz
