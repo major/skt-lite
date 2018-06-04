@@ -78,7 +78,7 @@ def assemble_jenkins_parameters(repo_cfg, series_data):
     }
 
     # Add make options if they are present
-    if cfg.get('makeopts'):
+    if cfg.get('config', 'makeopts'):
         jenkins_job_params['MAKEOPTS'] = cfg.get('makeopts')
 
     # Get the config_url option if the config_type is 'url'
