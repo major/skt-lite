@@ -268,30 +268,30 @@ for repo_name, repo_data in repos:
 
     # Iterate over our incomplete series and check for series are are now
     # complete.
-    for series_id in incomplete_series:
-        logging.info(
-            "Checking previously incomplete series: {}".format(series_id)
-        )
-        series = get_patch_series(
-            patchwork_url=repo_data['patchwork_url'],
-            patchwork_project=repo_data['patchwork_project'],
-            series_id=series_id,
-        )
+    # for series_id in incomplete_series:
+    #     logging.info(
+    #         "Checking previously incomplete series: {}".format(series_id)
+    #     )
+    #     series = get_patch_series(
+    #         patchwork_url=repo_data['patchwork_url'],
+    #         patchwork_project=repo_data['patchwork_project'],
+    #         series_id=series_id,
+    #     )
 
-        if series['received_all']:
-            # If the series is complete now, let's send it to Jenkins.
-            jenkins_job_params = assemble_jenkins_parameters(
-                dict(cfg.items(repo_name)),
-                series
-            )
-            jenkins_reply = send_to_jenkins(
-                job_params=jenkins_job_params,
-                build_cause=series['url'],
-            )
+    #     if series['received_all']:
+    #         # If the series is complete now, let's send it to Jenkins.
+    #         jenkins_job_params = assemble_jenkins_parameters(
+    #             dict(cfg.items(repo_name)),
+    #             series
+    #         )
+    #         jenkins_reply = send_to_jenkins(
+    #             job_params=jenkins_job_params,
+    #             build_cause=series['url'],
+    #         )
 
-            # Remove the series from the list of incomplete patches.
-            state[repo_name]['incomplete_series'].remove(series_id)
-            write_state_file(args.state_file, state)
+    #         # Remove the series from the list of incomplete patches.
+    #         state[repo_name]['incomplete_series'].remove(series_id)
+    #         write_state_file(args.state_file, state)
 
     # Get the list of new series for this repo from Patchwork
     logging.info(
@@ -316,13 +316,13 @@ for repo_name, repo_data in repos:
         # If this patch is incomplete, add it to our list of incomplete
         # patches to check during the next run.
         if not series['received_all']:
-            logging.info("Found incomplete series: {}".format(series['id']))
-            if 'incomplete_series' not in state[repo_name].keys():
-                state[repo_name]['incomplete_series'] = [series['id']]
-            elif series['id'] not in state[repo_name]['incomplete_series']:
-                state[repo_name]['incomplete_series'].append(series['id'])
+            # logging.info("Found incomplete series: {}".format(series['id']))
+            # if 'incomplete_series' not in state[repo_name].keys():
+            #     state[repo_name]['incomplete_series'] = [series['id']]
+            # elif series['id'] not in state[repo_name]['incomplete_series']:
+            #     state[repo_name]['incomplete_series'].append(series['id'])
 
-            write_state_file(args.state_file, state)
+            # write_state_file(args.state_file, state)
             continue
 
         # Assemble Jenkins parameters
